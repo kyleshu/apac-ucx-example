@@ -354,7 +354,7 @@ int main(void)
     mybuff = malloc(HUGEPAGE);
     memset(mybuff, 0, HUGEPAGE);
     sdata = (char *)malloc(HUGEPAGE);
-    memset(mybuff, 1, HUGEPAGE);
+    memset(sdata, 1, HUGEPAGE);
     
     barrier();
 
