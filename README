@@ -7,4 +7,4 @@ To compile:
     $ make
 
 To run with two nodes on the Thor system:
-    $ mpirun -np 2 --map-by node ./ucx_mr_bw
+    $ mpirun -np 2 --map-by node --display-map ./ucx_mr_bw

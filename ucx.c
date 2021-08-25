@@ -340,7 +340,7 @@ int main(void)
         printf("%-10s%15s%15s%15s\n", "Size", "Latency us", "Msg/s", "BW MB/s");
     }
 
-    for (int i = 1; i <= 1024; i *= 2) {
+    for (int i = 8; i <= 1024*1024*8; i *= 2) {
         bench(sdata, 100, 10, i);
     }
 
