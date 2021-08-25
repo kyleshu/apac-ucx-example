@@ -288,7 +288,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
             } 
-            //ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             if (UCS_OK != ucp_status) {
                 if (UCS_PTR_IS_ERR(ucp_status)) {
                     abort();
@@ -327,7 +327,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
             }
-            //ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             if (UCS_OK != ucp_status) {
                 if (UCS_PTR_IS_ERR(ucp_status)) {
                     abort();
