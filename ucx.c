@@ -302,7 +302,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             }
             while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
                 // wait till receive data
-                puts("I'm keep waiting")
+                puts("I'm keep waiting");
             }
         }
         end = MPI_Wtime();
