@@ -247,13 +247,14 @@ int cmpfunc(const void * a, const void * b)
     return ((*(double *)a) - (*(double *)b));
 }
 
-void bench(char * sdata, int iter, int warmup, size_t data_size)
+void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 {
     double start, end;
     double bw = 0.0;
     double total = 0.0;
     ucp_request_param_t req_param = {0};
     ucs_status_ptr_t ucp_status;
+    char* zero_mem = char[data_size] {0};
 
 
     /* provide a warmup between endpoints */
@@ -263,10 +264,6 @@ void bench(char * sdata, int iter, int warmup, size_t data_size)
         } else {
             ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
         }
-        if (UCS_PTR_IS_PTR(ucp_status)) {
-            ucp_request_free(ucp_status);
-        }
-        ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
         if (UCS_OK != ucp_status) {
             if (UCS_PTR_IS_ERR(ucp_status)) {
                 abort();
@@ -289,16 +286,20 @@ void bench(char * sdata, int iter, int warmup, size_t data_size)
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
             } 
-        }
-        ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
-        if (UCS_OK != ucp_status) {
-            if (UCS_PTR_IS_ERR(ucp_status)) {
-                abort();
-            } else {
-                while (UCS_INPROGRESS == ucp_request_check_status(ucp_status)) {
-                    ucp_worker_progress(ucp_worker);
+            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            if (UCS_OK != ucp_status) {
+                if (UCS_PTR_IS_ERR(ucp_status)) {
+                    abort();
                 }
-                ucp_request_free(ucp_status);
+                else {
+                    while (UCS_INPROGRESS == ucp_request_check_status(ucp_status)) {
+                        ucp_worker_progress(ucp_worker);
+                    }
+                    ucp_request_free(ucp_status);
+                }
+            }
+            while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
+                // wait till receive data
             }
         }
         end = MPI_Wtime();
@@ -311,6 +312,29 @@ void bench(char * sdata, int iter, int warmup, size_t data_size)
         printf("%15.2f", total);
         printf("%15.2f", bw / (1024 * 1024));
         printf("\n");
+    }
+    else {
+        for (int i = 0; i < iter; i++) {
+            while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
+                // wait till receive data
+            }
+            ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
+            if (UCS_PTR_IS_PTR(ucp_status)) {
+                ucp_request_free(ucp_status);
+            }
+            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            if (UCS_OK != ucp_status) {
+                if (UCS_PTR_IS_ERR(ucp_status)) {
+                    abort();
+                }
+                else {
+                    while (UCS_INPROGRESS == ucp_request_check_status(ucp_status)) {
+                        ucp_worker_progress(ucp_worker);
+                    }
+                    ucp_request_free(ucp_status);
+                }
+            }
+        }
     }
     barrier();
 }
@@ -326,7 +350,9 @@ int main(void)
     /* initialize the runtime and communication components */
     comm_init();
     mybuff = malloc(HUGEPAGE);
+    memset(mybuff, 0, HUGEPAGE);
     sdata = (char *)malloc(HUGEPAGE);
+    memset(mybuff, 1, HUGEPAGE);
     
     barrier();
 
@@ -335,9 +361,9 @@ int main(void)
     
     shared_ptr = (char *) mybuff;
 
-    for (int i = 0; i < HUGEPAGE; i++) {
-        shared_ptr[i] = (char) i;
-    }
+    //for (int i = 0; i < HUGEPAGE; i++) {
+        //shared_ptr[i] = (char) i;
+    //}
     barrier();
 
     if (my_pe == 0) {
@@ -345,7 +371,7 @@ int main(void)
     }
 
     for (int i = 8; i <= 1024*1024*8; i *= 2) {
-        bench(sdata, 100, 10, i);
+        bench(sdata, shared_ptr, 100, 10, i);
     }
 
     comm_finalize();
