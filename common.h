@@ -3,8 +3,8 @@
 
 // 4 kB page
 #define PAGESIZE   (1<<12)
-// 2 MB page
-#define HUGEPAGE   (1<<21) 
+// 8 MB page
+#define HUGEPAGE   (1<<23) 
 
 struct data_exchange {
     size_t pack_size;
