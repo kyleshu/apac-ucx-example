@@ -300,9 +300,11 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                     ucp_request_free(ucp_status);
                 }
             }
+            puts("client sent data");
             while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
                 // wait till receive data
             }
+            puts("client received data");
         }
         end = MPI_Wtime();
 
@@ -316,12 +318,11 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
         printf("\n");
     }
     else {
-        puts("I'm server2");
         for (int i = 0; i < iter; i++) {
             while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
                 // wait till receive data
             }
-            puts("I'm server3");
+            puts("server received data");
             ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
@@ -338,6 +339,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                     ucp_request_free(ucp_status);
                 }
             }
+            puts("server sent data");
         }
     }
     barrier();
