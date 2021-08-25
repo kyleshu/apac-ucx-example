@@ -258,6 +258,9 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     memset(zero_mem, 0, data_size);
 
+    printf("sdata %c\n", sdata[0]);
+    printf("mybuff %c\n", mybuff[0]);
+
 
     /* provide a warmup between endpoints */
     for (int i = 0; i < warmup; i++) {
@@ -281,7 +284,6 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     barrier();
     /* TODO: change this code to perform ping-pong latency */
     if (my_pe == 0) {
-        int j = 0;
         start = MPI_Wtime();
         for (int i = 0; i < iter; i++) {
             ucp_status = ucp_put_nbx(endpoints[1], &sdata[i * data_size], data_size, remote_addresses[1] + i * data_size, rkeys[1], &req_param);
@@ -302,7 +304,6 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             }
             while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
                 // wait till receive data
-                puts("I'm keep waiting");
             }
         }
         end = MPI_Wtime();
