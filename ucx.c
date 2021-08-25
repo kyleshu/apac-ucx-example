@@ -263,7 +263,6 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
         if (my_pe == 0) {
             ucp_status = ucp_put_nbx(endpoints[1], &sdata[i * data_size], data_size, remote_addresses[1] + i * data_size, rkeys[1], &req_param);
         } else {
-            puts("I'm server1");
             ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
         }
         if (UCS_OK != ucp_status) {
@@ -280,6 +279,8 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     barrier();
     /* TODO: change this code to perform ping-pong latency */
+    memset(mybuff, 0, HUGEPAGE);
+
     if (my_pe == 0) {
         start = MPI_Wtime();
         for (int i = 0; i < iter; i++) {
@@ -287,7 +288,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
             } 
-            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            //ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             if (UCS_OK != ucp_status) {
                 if (UCS_PTR_IS_ERR(ucp_status)) {
                     abort();
@@ -325,7 +326,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
             }
-            ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+            //ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             if (UCS_OK != ucp_status) {
                 if (UCS_PTR_IS_ERR(ucp_status)) {
                     abort();
