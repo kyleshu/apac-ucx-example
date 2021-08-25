@@ -258,8 +258,8 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     memset(zero_mem, 0, data_size);
 
-    printf("sdata %c\n", sdata[0]);
-    printf("mybuff %c\n", mybuff[0]);
+    printf("sdata %d\n", sdata[0]);
+    printf("mybuff %d\n", mybuff[0]);
 
 
     /* provide a warmup between endpoints */
