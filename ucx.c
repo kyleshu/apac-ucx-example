@@ -254,7 +254,9 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     double total = 0.0;
     ucp_request_param_t req_param = {0};
     ucs_status_ptr_t ucp_status;
-    char ZEROARRAY[data_size] = { 0 };
+    char* zero_mem = malloc(data_size * sizeof char);
+
+    memset(zero_mem, 0, data_size);
 
 
     /* provide a warmup between endpoints */
