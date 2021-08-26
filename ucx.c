@@ -272,9 +272,9 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     /* provide a warmup between endpoints */
     for (int i = 0; i < warmup; i++) {
         if (my_pe == 0) {
-            ucp_status = ucp_put_nbx(endpoints[1], &sdata[i * data_size], data_size, remote_addresses[1] + i * data_size, rkeys[1], &req_param);
+            ucp_status = ucp_put_nbx(endpoints[1], zero_mem, data_size, remote_addresses[1] + i * data_size, rkeys[1], &req_param);
         } else {
-            ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
+            ucp_status = ucp_put_nbx(endpoints[0], zero_mem, data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
         }
         if (UCS_OK != ucp_status) {
             if (UCS_PTR_IS_ERR(ucp_status)) {
@@ -290,7 +290,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     barrier();
     /* TODO: change this code to perform ping-pong latency */
-    memset(mybuff, 0, HUGEPAGE);
+    //memset(mybuff, 0, HUGEPAGE);
 
     if (memcmp(mybuff, zero_mem, data_size) == 0) {
         if (my_pe == 0) {
