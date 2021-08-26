@@ -369,16 +369,13 @@ int main(void)
     
     shared_ptr = (char *) mybuff;
 
-    //for (int i = 0; i < HUGEPAGE; i++) {
-        //shared_ptr[i] = (char) i;
-    //}
     barrier();
 
     if (my_pe == 0) {
         printf("%-10s%15s%15s%15s\n", "Size", "Latency us", "Msg/s", "BW MB/s");
     }
 
-    for (int i = 8; i <= 1024*1024*4; i *= 2) {
+    for (int i = 8; i <= 1024*1024*8; i *= 2) {
         memset(mybuff, 0, HUGEPAGE);
         bench(sdata, shared_ptr, 100, 10, i);
     }
