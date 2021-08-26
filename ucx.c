@@ -269,6 +269,9 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
         } else {
             ucp_status = ucp_put_nbx(endpoints[0], zero_mem, data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
         }
+        if (UCS_PTR_IS_PTR(ucp_status)) {
+            ucp_request_free(ucp_status);
+        }
         ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
         if (UCS_OK != ucp_status) {
             if (UCS_PTR_IS_ERR(ucp_status)) {
@@ -307,6 +310,17 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             while (memcmp(&mybuff[i * data_size], one_mem, data_size) != 0) {
                 // wait till receive data
                 ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+                if (UCS_OK != ucp_status) {
+                    if (UCS_PTR_IS_ERR(ucp_status)) {
+                        abort();
+                    }
+                    else {
+                        while (UCS_INPROGRESS == ucp_request_check_status(ucp_status)) {
+                            ucp_worker_progress(ucp_worker);
+                        }
+                        ucp_request_free(ucp_status);
+                    }
+                }
             }
         }
         end = MPI_Wtime();
@@ -325,6 +339,17 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
             while (memcmp(&mybuff[i * data_size], one_mem, data_size) != 0) {
                 // wait till receive data
                 ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
+                if (UCS_OK != ucp_status) {
+                    if (UCS_PTR_IS_ERR(ucp_status)) {
+                        abort();
+                    }
+                    else {
+                        while (UCS_INPROGRESS == ucp_request_check_status(ucp_status)) {
+                            ucp_worker_progress(ucp_worker);
+                        }
+                        ucp_request_free(ucp_status);
+                    }
+                }
             }
             ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
             if (UCS_PTR_IS_PTR(ucp_status)) {
