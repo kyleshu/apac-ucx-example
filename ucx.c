@@ -254,8 +254,10 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     double total = 0.0;
     ucp_request_param_t req_param = {0};
     ucs_status_ptr_t ucp_status;
+    char* one_mem = malloc(data_size);
     char* zero_mem = malloc(data_size);
 
+    memset(one_mem, 1, data_size);
     memset(zero_mem, 0, data_size);
 
     if (memcmp(mybuff, zero_mem, data_size) == 0) {
@@ -319,7 +321,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                 }
             }
             puts("client sent data");
-            while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
+            while (memcmp(&mybuff[i * data_size], one_mem, data_size) != 0) {
                 // wait till receive data
             }
             puts("client received data");
@@ -337,7 +339,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     }
     else {
         for (int i = 0; i < iter; i++) {
-            while (memcmp(&mybuff[i * data_size], zero_mem, data_size) == 0) {
+            while (memcmp(&mybuff[i * data_size], one_mem, data_size) != 0) {
                 // wait till receive data
             }
             puts("server received data");
