@@ -281,6 +281,15 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     /* TODO: change this code to perform ping-pong latency */
     memset(mybuff, 0, HUGEPAGE);
 
+    if (memcmp(mybuff, zero_mem, data_size) == 0) {
+        if (my_pe == 0) {
+            puts("client memory OK");
+        }
+        else {
+            puts("server memory OK");
+        }
+    }
+
     if (my_pe == 0) {
         start = MPI_Wtime();
         for (int i = 0; i < iter; i++) {
