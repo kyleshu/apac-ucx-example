@@ -258,6 +258,15 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     memset(zero_mem, 0, data_size);
 
+    if (memcmp(mybuff, zero_mem, data_size) == 0) {
+        if (my_pe == 0) {
+            puts("client memory OK1");
+        }
+        else {
+            puts("server memory OK1");
+        }
+    }
+
     /* provide a warmup between endpoints */
     for (int i = 0; i < warmup; i++) {
         if (my_pe == 0) {
@@ -283,10 +292,10 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
     if (memcmp(mybuff, zero_mem, data_size) == 0) {
         if (my_pe == 0) {
-            puts("client memory OK");
+            puts("client memory OK2");
         }
         else {
-            puts("server memory OK");
+            puts("server memory OK2");
         }
     }
 
