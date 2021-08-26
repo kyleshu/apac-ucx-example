@@ -260,6 +260,8 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     memset(one_mem, 1, data_size);
     memset(zero_mem, 0, data_size);
 
+    assert(memcmp(mybuff, zero_mem, data_size) == 0);
+
     /* provide a warmup between endpoints */
     for (int i = 0; i < warmup; i++) {
         if (my_pe == 0) {
