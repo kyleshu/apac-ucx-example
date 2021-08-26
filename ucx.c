@@ -255,7 +255,13 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
     ucp_request_param_t req_param = {0};
     ucs_status_ptr_t ucp_status;
     char* one_mem = malloc(data_size);
+    if (NULL == one_mem) {
+        perror("not enough memory");
+    }
     char* zero_mem = malloc(data_size);
+    if (NULL == zero_mem) {
+        perror("not enough memory");
+    }
 
     memset(one_mem, 1, data_size);
     memset(zero_mem, 0, data_size);
@@ -383,8 +389,14 @@ int main(void)
     /* initialize the runtime and communication components */
     comm_init();
     mybuff = malloc(HUGEPAGE);
+    if (NULL == mybuff) {
+        perror("not enough memory");
+    }
     memset(mybuff, 0, HUGEPAGE);
     sdata = (char *)malloc(HUGEPAGE);
+    if (NULL == sdata) {
+        perror("not enough memory");
+    }
     memset(sdata, 1, HUGEPAGE);
     
     barrier();
