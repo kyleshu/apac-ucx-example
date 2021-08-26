@@ -241,6 +241,7 @@ int finalize_mpi(void)
 {
     MPI_Type_free(&mpi_worker_exchange_dt);
     MPI_Type_free(&mpi_buffer_exchange_dt);
-    MPI_Comm_free(&MPI_COMM_WORLD);
+    ompi_communicator_t* mpi_comm_world = MPI_COMM_WORLD;
+    MPI_Comm_free(&mpi_comm_world);
     MPI_Finalize();
 }
