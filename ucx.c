@@ -316,8 +316,8 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
 
         printf("%-10ld", data_size);
         printf("%15.2f", ((end - start) * 1e6) / iter / 2);
-        printf("%15.2f", total);
-        printf("%15.2f", bw / (1024 * 1024));
+        printf("%15.2f", total * 2);
+        printf("%15.2f", bw / (1024 * 1024) * 2);
         printf("\n");
     }
     else {
