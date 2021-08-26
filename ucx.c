@@ -276,6 +276,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
         } else {
             ucp_status = ucp_put_nbx(endpoints[0], zero_mem, data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
         }
+        ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
         if (UCS_OK != ucp_status) {
             if (UCS_PTR_IS_ERR(ucp_status)) {
                 abort();
