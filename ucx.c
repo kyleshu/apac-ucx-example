@@ -302,12 +302,12 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                     ucp_request_free(ucp_status);
                 }
             }
-            puts("client sent data");
+            //puts("client sent data");
             while (memcmp(&mybuff[i * data_size], one_mem, data_size) != 0) {
                 // wait till receive data
                 ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             }
-            puts("client received data");
+            //puts("client received data");
         }
         end = MPI_Wtime();
 
@@ -326,7 +326,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                 // wait till receive data
                 ucp_status = ucp_worker_flush_nbx(ucp_worker, &req_param);
             }
-            puts("server received data");
+            //puts("server received data");
             ucp_status = ucp_put_nbx(endpoints[0], &sdata[i * data_size], data_size, remote_addresses[0] + i * data_size, rkeys[0], &req_param);
             if (UCS_PTR_IS_PTR(ucp_status)) {
                 ucp_request_free(ucp_status);
@@ -343,7 +343,7 @@ void bench(char * sdata, char * mybuff, int iter, int warmup, size_t data_size)
                     ucp_request_free(ucp_status);
                 }
             }
-            puts("server sent data");
+            //puts("server sent data");
         }
     }
     barrier();
